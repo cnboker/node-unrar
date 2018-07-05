@@ -10,7 +10,16 @@ var UnrarStream = require('./lib/stream.js');
 var Unrar = function(options) {
   this._arguments = options.arguments || [];
   this._filepath = options.path || options;
+  this._exepath = options.exepath || '';
+  if(this._exepath.length > 0 && !this._exepath.endsWith('/')){
+    this._exepath += '/';
+  }
+  
   this._failOnPasswords = options.failOnPasswords || false;
+};
+
+String.prototype.endsWith = function(suffix) {
+  return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
 /**
@@ -78,7 +87,7 @@ Unrar.prototype._exec = function(args, done) {
   var self = this;
   args = args.concat(self._arguments);
   var command =
-    'unrar ' +
+    `${this._exepath}unrar ` +
     args.join(' ') +
     ' "' + self._filepath + '"';
   return exec(command, function(err, stdout, stderr) {
